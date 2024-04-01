@@ -26,42 +26,28 @@ public class JobServiceImplementation implements JobService {
     }
 
     @Override
-    public boolean createJob(Job job) {
-        try {
-            jobRepository.save(job);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public Job createJob(Job job) {
+        Job createdJob = jobRepository.save(job);
+        return getJobById(createdJob.getId());
     }
 
     @Override
-    public boolean updateJobById(Long id, Job updatedJobData) {
-        try {
-            Optional<Job> jobOptional = jobRepository.findById(id);
-            if (jobOptional.isPresent()) {
-                Job job = jobOptional.get();
-                job.setTitle(updatedJobData.getTitle());
-                job.setDescription(updatedJobData.getDescription());
-                job.setMinimumSalary(updatedJobData.getMinimumSalary());
-                job.setMaximumSalary(updatedJobData.getMaximumSalary());
-                job.setLocation(updatedJobData.getLocation());
-                jobRepository.save(job);
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            return false;
+    public Job updateJobById(Long id, Job updatedJobData) {
+        Optional<Job> jobOptional = jobRepository.findById(id);
+        if (jobOptional.isPresent()) {
+            Job job = jobOptional.get();
+            job.setTitle(updatedJobData.getTitle() == null ? job.getTitle() : updatedJobData.getTitle());
+            job.setDescription(updatedJobData.getDescription() == null ? job.getDescription() : updatedJobData.getDescription());
+            job.setMinimumSalary(updatedJobData.getMinimumSalary() == null ? job.getMinimumSalary() : updatedJobData.getMinimumSalary());
+            job.setMaximumSalary(updatedJobData.getMaximumSalary() == null ? job.getMaximumSalary() : updatedJobData.getMaximumSalary());
+            job.setLocation(updatedJobData.getLocation() == null ? job.getLocation() : updatedJobData.getLocation());
+            return jobRepository.save(job);
         }
+        return null;
     }
 
     @Override
-    public boolean deleteJobById(Long id) {
-        try {
-            jobRepository.deleteById(id);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public void deleteJobById(Long id) {
+        jobRepository.deleteById(id);
     }
 }

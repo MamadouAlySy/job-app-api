@@ -18,40 +18,39 @@ public class JobController {
 
     @GetMapping
     public ResponseEntity<List<Job>> index() {
-        List<Job> listOfJobs = jobService.getAllJobs();
-        return new ResponseEntity<>(listOfJobs, HttpStatus.OK);
+        return new ResponseEntity<>(
+                jobService.getAllJobs(),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Job> show(@PathVariable Long id) {
+    public ResponseEntity show(@PathVariable Long id) {
         Job job = jobService.getJobById(id);
-        if (job == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        if (job == null)
+            return new ResponseEntity<>("Job not found.", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(job, HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<String> create(@RequestBody Job job) {
-        if (jobService.createJob(job)) {
-            return new ResponseEntity<>("Job created successfully", HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Job> create(@RequestBody Job job) {
+        return new ResponseEntity<>(jobService.createJob(job), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id,  @RequestBody Job job) {
-        if (jobService.updateJobById(id, job)) {
-            return new ResponseEntity<>("Job updated successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity update(@PathVariable Long id,  @RequestBody Job job) {
+        Job updatedJob = jobService.updateJobById(id, job);
+        if (job == null)
+            return new ResponseEntity<>("Job not found.", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
-        if (jobService.deleteJobById(id)) {
-            return new ResponseEntity<>("Job deleted successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity delete(@PathVariable Long id) {
+        Job job = jobService.getJobById(id);
+        if (job == null)
+            return new ResponseEntity<>("Job not found.", HttpStatus.NOT_FOUND);
+        jobService.deleteJobById(id);
+        return new ResponseEntity<>(job, HttpStatus.OK);
     }
 }
